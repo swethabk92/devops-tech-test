@@ -20,7 +20,7 @@
 - `Dockerfile` Use the official python-3.6 image, installs flask and runs hello.py script. The image is built already and pushed to docker hub. `docker pull swethabk92/seniordevopsengineer-flask:1.0.0`
 
 ## Basic Architechture of the Setup
-![alt text](./Architecture.png?raw=true "Architecture")
+![alt text](./Architecture.png "Architecture")
 
 - `Makefile`
     - `make iam-securitygroup` Creates the cloud formation stack for iam roles and security group.
