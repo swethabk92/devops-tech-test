@@ -1,0 +1,52 @@
+#This template reads the master role from previously created stack and creates the EKS cluster named SeniorDevopsEngineer-Task
+Description: "EKS Cluster"
+
+Parameters:
+  Subnets:
+    Description: 'List Of Subnets'
+    Type: CommaDelimitedList
+    Default: ''
+
+  EKSClusterName:
+    Description: 'A Name For The EKS Cluster'
+    Type: String
+    Default: ''
+
+  EKSRole:
+    Description: 'IAM Role For EKS Master'
+    Type: String
+    Default: ''
+
+  kubernetesVersion:
+    Description: 'Kubernetes Version To Use With EKS (Optional)'
+    Type: String
+    Default: '1.22.6'
+
+Resources:
+  eksCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref EKSClusterName
+      Version: !Ref kubernetesVersion
+      RoleArn: !ImportValue iam-securityGroup-Stack-eksMasterRole
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !ImportValue iam-securityGroup-Stack-K8sMasterSecurityGroupId
+        SubnetIds: !Ref Subnets
+        EndpointPublicAccess: false
+        EndpointPrivateAccess: true
+      Logging:
+        ClusterLogging:
+          EnabledTypes:
+            - Type: api
+            - Type: audit
+      Tags:
+        - Key: Name
+          Value: !Ref EKSClusterName
+
+Outputs:
+  EksClusterName:
+    Description: 'EKS Cluster Name'
+    Value: !Ref eksCluster
+    Export:
+      Name: !Sub '${AWS::StackName}-eksClusterName'

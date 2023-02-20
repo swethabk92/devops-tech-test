@@ -1,0 +1,52 @@
+#This template creates a nodeGroup for EKS cluster. Defaulted to 1 here.
+
+Description: "NodeGroup for the eks cluster"
+
+Parameters:
+  EKSClusterName:
+    Description: 'A Name For The EKS Cluster (Required)'
+    Type: String
+    Default: ''
+
+  EKSNodeGroup:
+    Description: 'Name For Node group'
+    Type: String
+    Default: ''
+
+  KeyPair:
+    Description: "KeyPair used for ssh to nodes"
+    Type: String
+    Default: ''
+
+  Subnets:
+    Description: 'List Of Subnets Ids (Required)'
+    Type: CommaDelimitedList
+    Default: ''
+
+Resources:
+  eksNodeGroup:
+    Type: AWS::EKS::Nodegroup
+    Properties: 
+      CapacityType: ON_DEMAND
+      ClusterName: !Ref EKSClusterName
+      InstanceTypes: 
+        - m4.xlarge
+      NodegroupName: !Ref EKSNodeGroup
+      NodeRole: !ImportValue iam-securityGroup-Stack-eksWorkerRole
+      ScalingConfig: 
+        DesiredSize: 1
+        MaxSize: 2
+        MinSize: 1
+      Subnets: !Ref Subnets
+      RemoteAccess:
+        Ec2SshKey: !Ref KeyPair
+        SourceSecurityGroups:
+          - !ImportValue iam-securityGroup-Stack-K8sMasterSecurityGroupId
+
+
+Outputs:
+  eksNodeGroup:
+    Description: 'EKS Node Group'
+    Value: !Ref eksNodeGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-eksNodeGroup'

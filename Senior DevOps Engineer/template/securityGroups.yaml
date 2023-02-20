@@ -1,0 +1,123 @@
+#This template creates IAM roles required for creating EKS cluster and the worker nodes. Also, it creates the security groups.
+Description: 'Roles and security groups'
+
+Parameters:
+  VpcId:
+    Description: 'The Vpc Id For The SSH Bastion (Required)'
+    Type: AWS::EC2::VPC::Id
+    Default: ''
+
+Resources:
+  eksMasterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service:
+              - eks.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+
+  eksWorkerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/workload/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - autoscaling:UpdateAutoScalingGroup
+                  - autoscaling:Describe*
+                  - autoscaling:SetDesiredCapacity
+                  - autoscaling:TerminateInstanceInAutoScalingGroup
+                  - ec2:Describe*
+                Resource: "*"
+          PolicyName: 'autoscaling'
+        - PolicyName: 'eksFullPermission'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "eks:*"
+                Resource:
+                  - "*"
+  eksWorkerProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: '/workload/'
+      Roles:
+        - !Ref eksWorkerRole
+
+  eksSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub 'EKS ControlPlane security Group'
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 10.0.0.0/8
+          Description: 'Kubernetes API access'
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '10.0.0.0/8'
+          Description: "Allow SSH Traffic"
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          Description: "Full Access For EKS Workers"
+        - IpProtocol: udp
+          FromPort: 0
+          ToPort: 65535
+          Description: "Full Access For EKS Workers"
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: F1000
+            reason: "Currently Allowing All Outbound Traffic From Endpoints"
+
+Outputs:
+  EksMasterRoleArn:
+    Description: 'EKS master Role ARN'
+    Value: !GetAtt eksMasterRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-eksMasterRole'
+
+  EKSWorkerRoleArn:
+    Description: 'EKS worker role Arn'
+    Value: !GetAtt eksWorkerRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-eksWorkerRole'
+
+  EksWorkerProfileArn:
+    Description: 'EKS Worker Profile Arn'
+    Value: !GetAtt eksWorkerProfile.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-eksWorkerProfile'
+
+  EksSecurityGroupId:
+    Description: 'Eks Security Group Id'
+    Value: !Ref eksSecurityGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-K8sMasterSecurityGroupId'

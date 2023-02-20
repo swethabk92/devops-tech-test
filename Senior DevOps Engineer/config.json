@@ -1,0 +1,11 @@
+{
+    "Parameters": {
+        "AccountId": 123,
+        "VpcId": "",
+        "Subnets": ", ",
+        "EKSClusterName": "SeniorDevopsEngineer-Task",
+        "kubernetesVersion": "1.26",
+        "EKSNodeGroup": "EKS",
+        "KeyPair": ""
+    }  
+}

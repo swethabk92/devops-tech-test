@@ -1,26 +1,45 @@
 # Senior DevOps Engineer - technical interview
 
-## Testing goals
-- With this test, we want to see your ability to create an entire infrastructure from scratch as well as your skills in cloud engineering, automation and as a system administrator.
+## Templates, scripts and configs
 
-## The task
-- We want to containerise and deploy `hello.py` to your choice of cloud provider listed below with one of their managed container solutions (eg: EKS or ECS), we want a secure isolated environment, and we want to run multiple containers on an instance.
+- `template/roles_securityGroups.yaml` CF template creates the 2 IAM roles, master and worker role. Master role is used for the creation of EKS cluster and the worker role is used for the creation of worker nodes. It also creates the security group allowing full access to the kubernetes worker nodes.
 
-## The solution
-- In your solution, please emphasise on readability, maintainability and DevOps methodologies. We expect a clear way to recreate your setup.
-- A Docker container running our Flask application.
-- The infrastructure provider should be AWS, GCP or Azure.
-- Use an infrastructure as code tool of choice (Terraform, Ansible, Cloudformation etc) as the configuration management tool including any Dockerfiles and scripts.
-- Make sure to include a README.md with clear instructions, so we can run your code.
-- A CI/CD spec file using your choice of CI tool (Jenkins, GitLab or Bamboo).
-- A clean bare minimum working infrastructure is preferred than a full-blown solution pieced together with scissors, rope and duct tape. Do not skip security considerations.
+- `template/cluster.yaml` CF template creates the EKS cluster. The name of the cluster is defined in the `config.json`.
 
-## When you are finished
-- Submit your solution to a GitHub repository and send us a link.
-- Make sure your README tells us how to run it.
-- Please fork this repo so that you are tested against the test that you started with, as this test may change.
+- `template/nodeGroup.yaml` CF template creates the node group. It has the desized size to 1, so it will create one node and gets attached to the EKS cluster. Node group name comes from `config.json` file.
 
-## Bonus points
-- If you can setup a Git branching strategy.
-- If you can document all aspects of your code, in the README and within the code itself.
-- If you can provide a PNG diagram of your infrastructure.
+- `kubernetes/aws-auth-cm.yml` This lets the IAM role that was created access the cluster. After running `kubectl apply -f kubernetes/aws-auth-cm.yml` the node(s) join the cluster.
+
+- `kubernetes/deployment.yaml` Definition file of kind deployment, deploys the docker image that containes hello.py.
+
+- `Dockerfile` Use the official python3 image, installs flask and runs hello.py script. The image is built already and pushed to docker hub. `docker pull udhaya/flask:one`
+
+- `Makefile`
+    - `make iam-sg` Creates the cloud formation stack for iam roles and security group.
+    - `make createCluster` Creates the cloud formation stack for EKS cluster.
+    - `make applyConfigMap` kubectl apply aws auth configMap for the nodes to join the cluster.
+    - `make CreateNodeGroup` Creates the node group for the EKS cluster.
+    - `make deploy` Deploys the image into the pod.
+
+- `config.json` Configuration file
+
+### Prerequisites
+As of 16th Aug 2022,
+-  The template will not configure aws cli, will not create vpc, subnets and key pair. Make sure you have run `aws configure` where you running the cli.
+-  `config.json` Add your vpc, subnets as "subnet1, subnet2" and keypair
+-  `aws-auth-cm.yml` replace rolearn in line 8 to  `arn:aws:iam::<accountid>:role/<iam_role_workernode_that_we_created_in_the_roles_securityGroups.yaml_stack> `
+
+### Deployment steps
+-   Clone the repo
+-   Update VPC, subnets and keypair in config.json
+-   Run the following make commands
+    `make iam-sg`
+    `make createCluster`
+-   Update aws-auth-cm.yml file with the worker node IAM role
+-   Run the following make commands
+    `make applyConfigMap`
+    `make CreateNodeGroup`
+    `make deploy`
+
+### NOTE:
+If you are running the scripts behind a proxy, you will face an issue with docker pulling the image `udhaya/flask:one` from docker hub. If so, please update the proxy in the node under the file `/etc/systemd/system/docker.service.d/00proxy.conf`

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld
+  labels:
+    application: pythonFlask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: pythonFlask
+  template:
+    metadata:
+      labels:
+        application: pythonFlask
+    spec:
+      containers:
+      - name: helloworld-flask
+        image:  swethabk92/seniordevopsengineer-flask:1.0.0
+        ports:
+          - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  type: ClusterIP
+  selector:
+    application: pythonFlask
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      name: ui
