@@ -43,10 +43,13 @@
     `make CreateNodeGroup`
     `make deploy`
 
-### Jenkins Deployment steps
+### Jenkins Automated Deployment steps
 - Create a pipepline job in jenkins instance which has connectivity to our AWS account - Jenkins hosted in AWS EC2 instance is preferred for compatibility
 - Select the scm and give this github url and save.
 - Run the job and it will run:  `Clone the code --> Sonar analysis on the code --> Build the Docker Image --> Push to Dockerhub --> Create EKS Cluster in AWS --> Deploy to Kubernetes`
+
+## Branching strategy needs to be followed to get standardized development of any application
+- Branching strategy procedure is documented and uploaded in the same directory `./Git_Branching_Strategy.docx`
 
 ### NOTE:
 Running the scripts behind a proxy throws an error while pulling the image `swethabk92/seniordevopsengineer-flask:1.0.0` from docker hub.
