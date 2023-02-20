@@ -1,5 +1,10 @@
 # Senior DevOps Engineer - technical interview
 
+## Prerequisites
+-  These templates will not configure aws cli tool, will not create vpc's, subnets or key pairs. Make sure you have run `aws configure` when you are running the cli.
+-  `config.json` will Add your vpc, subnets as "subnet1, subnet2" and keypair
+-  `aws-auth-cm.yml` replace "rolearn" in line no. 8 to  `arn:aws:iam::<accountid>:role/<iam_role_workernode_that_we_created_in_the_roles_securityGroups.yaml_stack> `
+
 ## Templates, scripts and configs
 
 - `template/securityGroups.yaml` CloudFunction template creates the 2 IAM roles, master and worker role. Master role is used for the creation of EKS cluster and the worker role is used for the creation of worker nodes. It also creates the security group allowing full access to the kubernetes worker nodes.
@@ -22,12 +27,6 @@
     - `make deploy` Deploys the image into the pod.
 
 - `config.json` Configuration file
-
-### Prerequisites
-
--  These templates will not configure aws cli tool, will not create vpc's, subnets or key pairs. Make sure you have run `aws configure` when you are running the cli.
--  `config.json` will Add your vpc, subnets as "subnet1, subnet2" and keypair
--  `aws-auth-cm.yml` replace "rolearn" in line no. 8 to  `arn:aws:iam::<accountid>:role/<iam_role_workernode_that_we_created_in_the_roles_securityGroups.yaml_stack> `
 
 ### Deployment steps
 -   Clone the repo
