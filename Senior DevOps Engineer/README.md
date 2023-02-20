@@ -28,7 +28,7 @@
 
 - `config.json` Configuration file
 
-### Deployment steps
+### Manual Deployment steps
 -   Clone the repo
 -   Update VPC, subnets and keypair using the config.json
 -   Run the following make commands
@@ -39,6 +39,11 @@
     `make applyConfigMap`
     `make CreateNodeGroup`
     `make deploy`
+
+### Jenkins Deployment steps
+- Create a pipepline job in jenkins instance which has connectivity to our AWS account - Jenkins hosted in AWS EC2 instance is preferred for compatibility
+- Select the scm and give this github url and save.
+- Run the job and it will run:  `Clone the code --> Sonar analysis on the code --> Build the Docker Image --> Push to Dockerhub --> Create EKS Cluster in AWS --> Deploy to Kubernetes`
 
 ### NOTE:
 Running the scripts behind a proxy throws an error while pulling the image `swethabk92/seniordevopsengineer-flask:1.0.0` from docker hub.
