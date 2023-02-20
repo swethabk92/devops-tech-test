@@ -24,16 +24,16 @@
 - `config.json` Configuration file
 
 ### Prerequisites
-As of 16th Aug 2022,
--  The template will not configure aws cli, will not create vpc, subnets and key pair. Make sure you have run `aws configure` where you running the cli.
--  `config.json` Add your vpc, subnets as "subnet1, subnet2" and keypair
--  `aws-auth-cm.yml` replace rolearn in line 8 to  `arn:aws:iam::<accountid>:role/<iam_role_workernode_that_we_created_in_the_roles_securityGroups.yaml_stack> `
+
+-  These templates will not configure aws cli tool, will not create vpc's, subnets or key pairs. Make sure you have run `aws configure` when you are running the cli.
+-  `config.json` will Add your vpc, subnets as "subnet1, subnet2" and keypair
+-  `aws-auth-cm.yml` replace "rolearn" in line no. 8 to  `arn:aws:iam::<accountid>:role/<iam_role_workernode_that_we_created_in_the_roles_securityGroups.yaml_stack> `
 
 ### Deployment steps
 -   Clone the repo
--   Update VPC, subnets and keypair in config.json
+-   Update VPC, subnets and keypair using the config.json
 -   Run the following make commands
-    `make iam-sg`
+    `make iam-securitygroup`
     `make createCluster`
 -   Update aws-auth-cm.yml file with the worker node IAM role
 -   Run the following make commands
@@ -42,4 +42,5 @@ As of 16th Aug 2022,
     `make deploy`
 
 ### NOTE:
-If you are running the scripts behind a proxy, you will face an issue with docker pulling the image `swethabk92/seniordevopsengineer-flask:1.0.0` from docker hub. If so, please update the proxy in the node under the file `/etc/systemd/system/docker.service.d/00proxy.conf`
+Running the scripts behind a proxy throws an error while pulling the image `swethabk92/seniordevopsengineer-flask:1.0.0` from docker hub.
+Solution: Update the proxy in the node under the file `/etc/systemd/system/docker.service.d/00proxy.conf`
