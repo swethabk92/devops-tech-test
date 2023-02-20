@@ -19,6 +19,9 @@
 
 - `Dockerfile` Use the official python-3.6 image, installs flask and runs hello.py script. The image is built already and pushed to docker hub. `docker pull swethabk92/seniordevopsengineer-flask:1.0.0`
 
+## Basic Architechture of the Setup
+![alt text](https://github.com/swethabk92/devops-tech-test/blob/seniordevopsengineer_task/Senior%20DevOps%20Engineer/Architecture.png?raw=true)
+
 - `Makefile`
     - `make iam-securitygroup` Creates the cloud formation stack for iam roles and security group.
     - `make createCluster` Creates the cloud formation stack for EKS cluster.
