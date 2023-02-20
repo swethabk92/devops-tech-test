@@ -13,4 +13,4 @@
 - Please fork this repo so that you are testing against the test that you started with, as this test may change
 
 # Solution
-- Solution has been developed in separate branch: https://github.com/swethabk92/devops-tech-test/tree/seniordevopsengineer_task#devops-engineer---technical-interview
+- Solution has been developed in separate branch: https://github.com/swethabk92/devops-tech-test/blob/seniordevopsengineer_task/Senior%20DevOps%20Engineer/README.md
