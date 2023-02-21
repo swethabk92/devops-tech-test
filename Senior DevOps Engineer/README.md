@@ -13,7 +13,7 @@
 
 - `template/eks_nodeGroup.yaml` CloudFunction template creates the node group. It has the desized size to 1, so it will create one node and gets attached to the EKS cluster. Node group name comes from `config.json` file.
 
-- `kubernetes/aws-auth-cm.yml` This lets the IAM role that was created access the cluster. After running `kubectl apply -f kubernetes/aws-auth-cm.yml` the node(s) join the cluster.
+- `kubernetes/aws-auth-cm.yml` This lets the IAM role that was created to access the cluster. After running `kubectl apply -f kubernetes/aws-auth-cm.yml` the node(s) join the cluster.
 
 - `kubernetes/deployment.yaml` Definition file of kind deployment, deploys the docker image that containes hello.py.
 
