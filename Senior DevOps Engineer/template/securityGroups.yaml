@@ -12,7 +12,6 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: 2012-10-17
         Statement:
           Effect: Allow
           Principal:
@@ -27,7 +26,6 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -40,7 +38,6 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
       Policies:
         - PolicyDocument:
-            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
@@ -53,7 +50,6 @@ Resources:
           PolicyName: 'autoscaling'
         - PolicyName: 'eksFullPermission'
           PolicyDocument:
-            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
